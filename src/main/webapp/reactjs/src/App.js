@@ -42,6 +42,7 @@ class App extends Component {
                                         <Route path="/" element={<Bienvenue />} />
                                         <Route path="/add" element={<Voiture submitVoiture={this.submitVoiture.bind(this)} />} />
                                         <Route path="/list" element={<VoitureListe />} />
+                                        <Route path="/edit/:id" element={<Voiture />}/>
                                     </Routes>
                                     <Footer />
                                 </Col>

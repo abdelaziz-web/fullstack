@@ -22,15 +22,9 @@ public class VoitureController {
         return voitureRepo.findAll();
     }
 
-    @PostMapping("/voitures")
-    public Voiture addVoiture(@RequestBody Voiture voiture) {
-        return voitureRepo.save(voiture);
-    }
 
 
-    @DeleteMapping("/voitures/{id}")
-    public void deleteVoiture(@PathVariable Long id) {
-        voitureRepo.deleteById(id);
-    }
+
+
 
 }

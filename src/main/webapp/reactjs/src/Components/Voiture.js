@@ -3,6 +3,7 @@ import { Card, Form, Button, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
+import { useParams } from 'react-router-dom';
 
 export default class Voiture extends Component {
     constructor(props) {
@@ -21,9 +22,35 @@ export default class Voiture extends Component {
         prix: ''
     }
 
+
+    componentDidMount = () => {
+        const { location } = this.props;
+        const voiture = location?.state?.voiture; // Using optional chaining
+
+        if (voiture) {
+            console.log("Voiture data passed:", voiture); // Check the passed data
+            this.setState({
+                marque: voiture.marque || '',
+                modele: voiture.modele || '',
+                couleur: voiture.couleur || '',
+                immatricule: voiture.immatricule || '',
+                annee: voiture.annee || '',
+                prix: voiture.prix || ''
+            });
+        } else {
+            console.log("No voiture data was passed."); // Handle the case where no data was passed
+        }
+    }
+
+
+
+
+
     resetVoiture = () => {
         this.setState(() => this.initialState);
     }
+
+
 
     voitureChange(event) {
         this.setState({
@@ -43,7 +70,16 @@ export default class Voiture extends Component {
             prix: this.state.prix
         };
 
-        axios.post("http://localhost:8000/voitures", voiture)
+        // POST request with authentication
+        const username = "user";
+        const password = "user";
+        const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+        axios.post("http://localhost:8000/api/voitures", voiture, {
+            headers: {
+                'Authorization': basicAuth
+            }
+        })
             .then(response => {
                 if (response.data != null) {
                     this.setState(this.initialState);

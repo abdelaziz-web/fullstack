@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import {Button, Card, Table} from 'react-bootstrap'; // N'oubliez pas d'importer Table
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { falist } from '@fortawesome/free-solid-svg-icons';
+import {faEdit, falist} from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 export default class VoitureListe extends Component {
 
@@ -14,8 +15,17 @@ export default class VoitureListe extends Component {
         };
     }
 
-    deleteVoiture = (voitureId) => {
-        axios.delete("http://localhost:8000/voitures/"+voitureId)
+
+    updateVoiture = (voitureId) => {
+        const username = "user";
+        const password = "user";
+        const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+        axios.put("http://localhost:8000/api/voitures/"+voitureId, {
+            headers: {
+                'Authorization': basicAuth
+            }
+        })
             .then(response => {
                 if(response.data != null){
                     alert("Voiture supprimée avec succès.");
@@ -24,9 +34,54 @@ export default class VoitureListe extends Component {
                     })
                 }
             })
+            .catch(error => {
+                console.error("Erreur lors de la suppression:", error);
+                alert("Erreur lors de la suppression de la voiture");
+            });
+    };
+
+    handleEditClick = (voitureId) => {
+        this.props.history.push(`/edit/${voitureId}`);
+    };
+
+    deleteVoiture = (voitureId) => {
+        const username = "user";
+        const password = "user";
+        const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+        axios.delete("http://localhost:8000/api/voitures/"+voitureId, {
+            headers: {
+                'Authorization': basicAuth
+            }
+        })
+            .then(response => {
+                if(response.data != null){
+                    alert("Voiture supprimée avec succès.");
+                    this.setState({
+                        voitures: this.state.voitures.filter(voiture => voiture.id !== voitureId)
+                    })
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de la suppression:", error);
+                alert("Erreur lors de la suppression de la voiture");
+            });
     };
     componentDidMount(){
-        axios.get("http://localhost:8000/voitures")
+        // Add authentication headers to your axios request
+
+
+        const username = "user";  // The username you set in Spring Security
+        const password = "user";  // The password you set in Spring Security
+        const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+        axios.get("http://localhost:8000/voitures", {
+
+            headers: {
+                'Authorization': basicAuth
+            }
+
+        })
             .then(response => {
                 console.log(response.data);
                 this.setState({ voitures: response.data });
@@ -73,7 +128,15 @@ export default class VoitureListe extends Component {
                                     <td>{voiture.prix}</td>
                                     <td>
                                         {/* You can add action buttons here, e.g., Edit or Delete */}
-                                        <Button variant="warning">Edit</Button>
+                                        <Button as={Link}
+                                                to={{
+                                            pathname: "/edit/" + voiture.id,
+                                            state: { voiture: voiture } // Passing the voiture object as state
+                                             }} size="sm" variant="outline-primary">
+
+                                            <FontAwesomeIcon icon={faEdit} /> Edit
+                                        </Button>
+
                                         <Button variant="danger" onClick={this.deleteVoiture.bind(this,voiture.id)}>Delete</Button>
                                     </td>
                                 </tr>
