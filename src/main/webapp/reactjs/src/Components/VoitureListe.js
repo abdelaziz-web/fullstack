@@ -128,12 +128,12 @@ export default class VoitureListe extends Component {
                                     <td>{voiture.prix}</td>
                                     <td>
                                         {/* You can add action buttons here, e.g., Edit or Delete */}
-                                        <Button as={Link}
-                                                to={{
-                                            pathname: "/edit/" + voiture.id,
-                                            state: { voiture: voiture } // Passing the voiture object as state
-                                             }} size="sm" variant="outline-primary">
-
+                                        <Button
+                                            as={Link}
+                                            to={`/voiture/${voiture.id}`}
+                                            size="sm"
+                                            variant="outline-primary"
+                                        >
                                             <FontAwesomeIcon icon={faEdit} /> Edit
                                         </Button>
 

@@ -4,6 +4,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import { useParams } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
+
+
+import { useLocation } from 'react-router-dom';
+
+function withRouter(WrappedComponent) {
+    return function WithRouterWrapper(props) {
+        const params = useParams();
+        const location = useLocation();
+        const navigate = useNavigate();
+
+        return <WrappedComponent
+            {...props}
+            params={params}
+            location={location}
+            navigate={navigate}
+        />;
+    }
+}
+
+
+
+
+
 
 export default class Voiture extends Component {
     constructor(props) {
@@ -23,22 +47,29 @@ export default class Voiture extends Component {
     }
 
 
-    componentDidMount = () => {
-        const { location } = this.props;
-        const voiture = location?.state?.voiture; // Using optional chaining
+    componentDidMount() {
+        const { params } = this.props;  // Access params directly from props
+        if (params && params.id) {
+            console.log("Fetching voiture with id:", params.id);
 
-        if (voiture) {
-            console.log("Voiture data passed:", voiture); // Check the passed data
-            this.setState({
-                marque: voiture.marque || '',
-                modele: voiture.modele || '',
-                couleur: voiture.couleur || '',
-                immatricule: voiture.immatricule || '',
-                annee: voiture.annee || '',
-                prix: voiture.prix || ''
-            });
-        } else {
-            console.log("No voiture data was passed."); // Handle the case where no data was passed
+            axios.get(`http://localhost:8000/api/voitures/${params.id}`)
+                .then(response => {
+                    if (response.data) {
+                        this.setState({
+                            marque: response.data.marque,
+                            modele: response.data.modele,
+                            couleur: response.data.couleur,
+                            immatricule: response.data.immatricule,
+                            annee: response.data.annee,
+                            prix: response.data.prix
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération des données:", error);
+                });
+        }else{
+            console.log("nothing to featch")
         }
     }
 
